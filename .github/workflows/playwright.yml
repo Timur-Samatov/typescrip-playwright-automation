@@ -6,9 +6,9 @@ on:
     branches: [main, master]
 
 env:
-  USER_FULLNAME_1: ${{secrets.USER_FULLNAME_1}}
-  USERNAME_1: ${{secrets.USERNAME_1}}
-  PASSWORD_1: ${{secrets.PASSWORD_1}}
+  USER_FULLNAME_1: ${{ secrets.USER_FULLNAME_1 }}
+  USERNAME_1: ${{ secrets.USERNAME_1 }}
+  PASSWORD_1: ${{ secrets.PASSWORD_1 }}
 
 jobs:
   test:
