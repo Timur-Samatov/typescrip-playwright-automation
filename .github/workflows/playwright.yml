@@ -4,6 +4,12 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+
+env:
+  USER_FULLNAME_1: ${{secrets.USER_FULLNAME_1}}
+  USERNAME_1: ${{secrets.USERNAME_1}}
+  PASSWORD_1: ${{secrets.PASSWORD_1}}
+
 jobs:
   test:
     timeout-minutes: 60
@@ -17,11 +23,6 @@ jobs:
         run: npm install -g pnpm && pnpm install
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
-      - name: Set environment variables
-        run: |
-          echo "USER_FULLNAME_1=${{ secrets.USER_FULLNAME_1 }}" >> $GITHUB_ENV
-          echo "USERNAME_1=${{ secrets.USERNAME_1 }}" >> $GITHUB_ENV
-          echo "PASSWORD_1=${{ secrets.PASSWORD_1 }}" >> $GITHUB_ENV
       - name: Run Playwright tests
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
