@@ -14,9 +14,11 @@ This project contains automated UI and API tests for the [Parabank](https://para
 
 ```text
 ├── api/                # API client implementations
+├── models/             # Data models for API responses
 ├── pages/              # Page Object Models (POM)
 │   └── components/     # Reusable UI components
 ├── tests/              # Test files
+│   ├── api/            # API-specific tests
 │   └── ui/             # UI-specific tests
 ├── .github/workflows/  # CI/CD configuration
 ├── playwright.config.ts # Playwright configuration
