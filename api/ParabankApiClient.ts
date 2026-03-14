@@ -2,9 +2,17 @@ import { APIRequestContext } from "@playwright/test";
 
 export class ParabankApiClient {
   private readonly request: APIRequestContext;
+  private username?: string;
+  private password?: string;
 
-  constructor(request: APIRequestContext) {
+  constructor(
+    request: APIRequestContext,
+    username?: string,
+    password?: string,
+  ) {
     this.request = request;
+    this.username = username;
+    this.password = password;
   }
 
   /**
@@ -76,27 +84,80 @@ export class ParabankApiClient {
     }
 
     // Get customer ID after registration
-    customer.id = await this.getCustomerId(
-      customer.username,
-      customer.password,
-    );
+    this.username = customer.username;
+    this.password = customer.password;
+    customer.id = await this.getCustomerId();
     return customer;
   }
 
-  private authenticatedHeaders(username: string, password: string) {
+  private authenticatedHeaders() {
+    if (!this.username || !this.password) {
+      throw new Error("Credentials are not set on API client");
+    }
     return {
       Authorization:
-        "Basic " + Buffer.from(`${username}:${password}`).toString("base64"),
+        "Basic " +
+        Buffer.from(`${this.username}:${this.password}`).toString("base64"),
       Accept: "application/json",
     };
   }
 
-  async getCustomerId(username: string, password: string): Promise<string> {
-    const response = await this.request.get(
-      `/parabank/services/bank/login/${username}/${password}`,
-      {
-        headers: this.authenticatedHeaders(username, password),
+  private async authGet(url: string, options: any = {}) {
+    return this.request.get(url, {
+      ...options,
+      headers: {
+        ...this.authenticatedHeaders(),
+        ...options.headers,
       },
+    });
+  }
+
+  private async authPost(url: string, options: any = {}) {
+    return this.request.post(url, {
+      ...options,
+      headers: {
+        ...this.authenticatedHeaders(),
+        ...options.headers,
+      },
+    });
+  }
+
+  private async authPut(url: string, options: any = {}) {
+    return this.request.put(url, {
+      ...options,
+      headers: {
+        ...this.authenticatedHeaders(),
+        ...options.headers,
+      },
+    });
+  }
+
+  private async authDelete(url: string, options: any = {}) {
+    return this.request.delete(url, {
+      ...options,
+      headers: {
+        ...this.authenticatedHeaders(),
+        ...options.headers,
+      },
+    });
+  }
+
+  async getCustomerId(): Promise<string> {
+    const response = await this.authGet(
+      `/parabank/services/bank/login/${this.username}/${this.password}`,
+    );
+
+    if (!response.ok()) {
+      return "";
+    }
+
+    const responseBody = await response.json();
+    return responseBody.id;
+  }
+
+  async getAccountsByCustomerId(customerId: string): Promise<any> {
+    const response = await this.authGet(
+      `/parabank/services/bank/accounts/${customerId}`,
     );
 
     if (!response.ok()) {
