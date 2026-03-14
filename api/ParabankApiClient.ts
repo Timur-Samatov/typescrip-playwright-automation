@@ -1,4 +1,5 @@
 import { APIRequestContext } from "@playwright/test";
+import { AccountType, getAccountTypeId } from "../models/AccountType";
 
 export class ParabankApiClient {
   private readonly request: APIRequestContext;
@@ -154,10 +155,14 @@ export class ParabankApiClient {
     const responseBody = await response.json();
     return responseBody.id;
   }
-
+  /**
+   * Retrieves a list of accounts for a specific customer.
+   * @param {string} customerId - The ID of the customer.
+   * @returns {Promise<any>} The list of accounts.
+   */
   async getAccountsByCustomerId(customerId: string): Promise<any> {
     const response = await this.authGet(
-      `/parabank/services/bank/accounts/${customerId}`,
+      `/parabank/services/bank/customers/${customerId}/accounts`,
     );
 
     if (!response.ok()) {
@@ -165,6 +170,42 @@ export class ParabankApiClient {
     }
 
     const responseBody = await response.json();
-    return responseBody.id;
+    return responseBody;
+  }
+
+  /**
+   * Creates a new account for a customer.
+   * @param {object} params - The parameters for creating a new account.
+   * @param {number} params.customerId - The ID of the customer.
+   * @param {number} params.fromAccountId - The ID of the account to transfer funds from.
+   * @param {AccountType} params.newAccountType - The type of the account.
+   * @returns {Promise<any>} The account object and response status.
+   */
+  async createAccount({
+    customerId,
+    fromAccountId,
+    newAccountType,
+  }: {
+    customerId: number;
+    fromAccountId: number;
+    newAccountType: AccountType;
+  }): Promise<any> {
+    const response = await this.authPost(
+      `/parabank/services/bank/createAccount`,
+      {
+        params: {
+          customerId,
+          fromAccountId,
+          newAccountType: getAccountTypeId(newAccountType),
+        },
+      },
+    );
+
+    if (!response.ok()) {
+      return { status: response.status() };
+    }
+
+    const responseBody = await response.json();
+    return { status: response.status(), data: responseBody };
   }
 }
