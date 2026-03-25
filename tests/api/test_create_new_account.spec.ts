@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { ParabankApiClient } from "../../api/ParabankApiClient";
-import { AccountType } from "../../models/AccountType";
+import { ParabankApiClient } from "@api/ParabankApiClient";
+import { AccountType } from "@models/AccountType";
 
 test("Test creating a new account for a customer with response validation.", async ({
   request,

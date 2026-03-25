@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { HomePage } from "../../pages/HomePage";
-import { AccountOverviewPage } from "../../pages/AccountOverviewPage";
+import { HomePage } from "@pages/HomePage";
+import { AccountOverviewPage } from "@pages/AccountOverviewPage";
 
 test("Test that login fails with invalid credentials and displays appropriate error messages.", async ({
   page,

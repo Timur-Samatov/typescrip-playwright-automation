@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { HomePage } from "../../pages/HomePage";
-import { AccountOverviewPage } from "../../pages/AccountOverviewPage";
-import { ParabankApiClient } from "../../api/ParabankApiClient";
+import { HomePage } from "@pages/HomePage";
+import { AccountOverviewPage } from "@pages/AccountOverviewPage";
+import { ParabankApiClient } from "@api/ParabankApiClient";
 
 test("Test successful login to the Parabank application.", async ({
   page,

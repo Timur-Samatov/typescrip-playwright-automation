@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
+    "strict": true,
     "strictNullChecks": false,
     "esModuleInterop": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["pages/*"],
+      "@components/*": ["components/*"],
+      "@api/*": ["api/*"],
+      "@models/*": ["models/*"]
+    }
+  },
 }
