@@ -16,6 +16,28 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+      - name: Initialize ParaBank Database
+        id: init-db
+        run: |
+          echo "Initializing ParaBank database..."
+
+          response=$(curl -X POST "${{ env.BASE_URL }}/parabank/services/bank/initializeDB" \
+            --silent \
+            --write-out "HTTPSTATUS:%{http_code}" \
+            --fail-with-body \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 60)
+
+          # Extract HTTP status code
+          http_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+          if [ "$http_code" -eq 200 ] || [ "$http_code" -eq 204 ]; then
+            echo "✅ Database initialized successfully (HTTP: $http_code)"
+          else
+            echo "❌ Database initialization failed (HTTP: $http_code)"
+            exit 1
+          fi
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
