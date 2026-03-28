@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { HomePage } from "@pages/HomePage";
-import { AccountOverviewPage } from "@pages/AccountOverviewPage";
+import { HomePage, AccountOverviewPage } from "@pages";
 import { ParabankApiClient } from "@api/ParabankApiClient";
 
 test("Test successful login to the Parabank application.", async ({
@@ -16,7 +15,7 @@ test("Test successful login to the Parabank application.", async ({
   await homePage.navigate();
   // Validate: The welcome message with customer name
   await homePage.loginForm.login(user.username, user.password);
-  expect(homePage.welcomeMessage).toContainText(
+  await expect(homePage.welcomeMessage).toContainText(
     `Welcome ${user.firstName} ${user.lastName}`,
   );
   // Validate: Account list is displayed

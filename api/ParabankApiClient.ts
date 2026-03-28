@@ -208,4 +208,22 @@ export class ParabankApiClient {
     const responseBody = await response.json();
     return { status: response.status(), data: responseBody };
   }
+
+  /**
+   * Retrieves details of a specific account.
+   * @param {number} accountId - The ID of the account.
+   * @returns {Promise<any>} The account details.
+   */
+  async getAccountDetails(accountId: number): Promise<any> {
+    return this.authGet(`/parabank/services/bank/accounts/${accountId}`).then(
+      (response) => {
+        if (!response.ok()) {
+          throw new Error(
+            `Failed to get account details with status ${response.status()}`,
+          );
+        }
+        return response.json();
+      },
+    );
+  }
 }
