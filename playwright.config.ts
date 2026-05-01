@@ -1,5 +1,5 @@
 import { defineConfig, devices, expect } from "@playwright/test";
-import { ZodTypeAny } from "zod";
+import { ZodType } from "zod";
 
 /**
  * Read environment variables from file.
@@ -11,7 +11,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 // Custom matcher: validates an APIResponse body (or plain object) against a Zod schema
 expect.extend({
-  async toMatchSchema(received: unknown, schema: ZodTypeAny) {
+  async toMatchSchema(received: unknown, schema: ZodType) {
     // Support both raw Playwright APIResponse and plain data objects
     const body =
       received !== null &&
