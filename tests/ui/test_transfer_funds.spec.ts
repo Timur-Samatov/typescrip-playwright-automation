@@ -1,12 +1,9 @@
-import { test, expect } from "@playwright/test";
-import { HomePage, TransferPage, ActivityPage } from "@pages";
-import { ParabankApiClient } from "@api/ParabankApiClient";
-import { AccountType } from "@models/AccountType";
+import { test, expect } from '@playwright/test';
+import { HomePage, TransferPage, ActivityPage } from '@pages';
+import { ParabankApiClient } from '@api/ParabankApiClient';
+import { AccountType } from '@models/AccountType';
 
-test("Test successful login to the Parabank application.", async ({
-  page,
-  request,
-}) => {
+test('Transferring funds between accounts.', async ({ page, request }) => {
   const homePage = new HomePage(page);
   const transferPage = new TransferPage(page);
   const activityPage = new ActivityPage(page);
@@ -28,12 +25,8 @@ test("Test successful login to the Parabank application.", async ({
   const initialSourceBalance = sourceAccountDetails.balance;
   // Get balance of destination account before transfer
   const destinationAccountId = newAccountResponse.data.id;
-  const destinationAccountDetails = await apiClient.getAccountDetails(
-    destinationAccountId,
-  );
+  const destinationAccountDetails = await apiClient.getAccountDetails(destinationAccountId);
   const destinationAccountBalance = destinationAccountDetails.balance;
-
-
 
   // Navigate to "Transfer Funds" page
   await homePage.navigate();
@@ -49,8 +42,8 @@ test("Test successful login to the Parabank application.", async ({
   });
   // Validate: Success message
   await expect(transferPage.resultMessage).toBeVisible();
-  expect(transferPage.resultMessage).toContainText("Transfer Complete!");
-  expect(transferPage.resultMessage).toContainText(
+  await expect(transferPage.resultMessage).toContainText('Transfer Complete!');
+  await expect(transferPage.resultMessage).toContainText(
     `${transferAmount.toFixed(2)} has been transferred from account #${sourceAccountId} to account #${destinationAccountId}.`,
   );
   // Validate: Balances changed correctly (before → after)
@@ -59,18 +52,18 @@ test("Test successful login to the Parabank application.", async ({
   const sourceAccountExpectedBalance = initialSourceBalance - transferAmount;
   // Check balance changed correctly for source account
   await expect(activityPage.balanceValue).toHaveText(
-    sourceAccountExpectedBalance.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
+    sourceAccountExpectedBalance.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
     }),
   );
   // Check balance changed correctly for destination account
   await activityPage.navigate(destinationAccountId);
   const expectedDestinationBalance = destinationAccountBalance + transferAmount;
   await expect(activityPage.balanceValue).toHaveText(
-    expectedDestinationBalance.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
+    expectedDestinationBalance.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
     }),
   );
 });

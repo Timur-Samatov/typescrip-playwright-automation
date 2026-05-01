@@ -3,9 +3,7 @@ import { ParabankApiClient } from '@api/ParabankApiClient';
 import { AccountType } from '@models/AccountType';
 import { AccountSchema } from '@models/schemas/AccountSchema';
 
-test('Test creating a new account for a customer with Zod response validation.', async ({
-  request,
-}) => {
+test('Creating a new account for a customer with Zod response validation.', async ({ request }) => {
   const apiClient = new ParabankApiClient(request);
   const user = await apiClient.registerNewUser();
 

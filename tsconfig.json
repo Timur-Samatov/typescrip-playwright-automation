@@ -4,26 +4,13 @@
     "strictNullChecks": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
     "paths": {
-      "@pages": [
-        "pages/index.ts"
-      ],
-      "@pages/*": [
-        "pages/*"
-      ],
-      "@components": [
-        "components/index.ts"
-      ],
-      "@components/*": [
-        "components/*"
-      ],
-      "@api/*": [
-        "api/*"
-      ],
-      "@models/*": [
-        "models/*"
-      ]
+      "@pages": ["./pages/index.ts"],
+      "@pages/*": ["./pages/*"],
+      "@components": ["./components/index.ts"],
+      "@components/*": ["./components/*"],
+      "@api/*": ["./api/*"],
+      "@models/*": ["./models/*"]
     }
-  },
+  }
 }
