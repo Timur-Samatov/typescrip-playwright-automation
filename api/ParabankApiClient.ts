@@ -1,16 +1,12 @@
-import { APIRequestContext } from "@playwright/test";
-import { AccountType, getAccountTypeId } from "../models/AccountType";
+import { APIRequestContext } from '@playwright/test';
+import { AccountType, getAccountTypeId } from '../models/AccountType';
 
 export class ParabankApiClient {
   private readonly request: APIRequestContext;
   private username?: string;
   private password?: string;
 
-  constructor(
-    request: APIRequestContext,
-    username?: string,
-    password?: string,
-  ) {
+  constructor(request: APIRequestContext, username?: string, password?: string) {
     this.request = request;
     this.username = username;
     this.password = password;
@@ -26,56 +22,50 @@ export class ParabankApiClient {
 
     // userData taken from .env file
     const userData = {
-      firstName: process.env.USER_FULLNAME_1.split(" ")[0],
-      lastName: process.env.USER_FULLNAME_1.split(" ")[1],
+      firstName: process.env.USER_FULLNAME_1.split(' ')[0],
+      lastName: process.env.USER_FULLNAME_1.split(' ')[1],
       userName: process.env.USERNAME_1,
       password: process.env.PASSWORD_1,
     };
 
     const customer = {
-      firstName: uniqueSuffix
-        ? userData.firstName + timestamp
-        : userData.firstName,
-      lastName: uniqueSuffix
-        ? userData.lastName + timestamp
-        : userData.lastName,
-      fullName: "",
+      firstName: uniqueSuffix ? userData.firstName + timestamp : userData.firstName,
+      lastName: uniqueSuffix ? userData.lastName + timestamp : userData.lastName,
+      fullName: '',
       address: {
-        street: "TestStreet",
-        city: "TestCity",
-        state: "TestState",
-        zipCode: "12345",
+        street: 'TestStreet',
+        city: 'TestCity',
+        state: 'TestState',
+        zipCode: '12345',
       },
-      username: uniqueSuffix
-        ? userData.userName + timestamp
-        : userData.userName,
+      username: uniqueSuffix ? userData.userName + timestamp : userData.userName,
       password: userData.password,
-      phoneNumber: "5551234567",
-      ssn: "11111111",
-      id: "",
+      phoneNumber: '5551234567',
+      ssn: '11111111',
+      id: '',
     };
     customer.fullName = `${customer.firstName} ${customer.lastName}`;
 
     // Initial request to setup session/cookies
-    await this.request.get("/parabank/register.htm");
+    await this.request.get('/parabank/register.htm');
 
     const formBody = {
-      "customer.firstName": customer.firstName,
-      "customer.lastName": customer.lastName,
-      "customer.address.street": customer.address.street,
-      "customer.address.city": customer.address.city,
-      "customer.address.state": customer.address.state,
-      "customer.address.zipCode": customer.address.zipCode,
-      "customer.phoneNumber": customer.phoneNumber,
-      "customer.ssn": customer.ssn,
-      "customer.username": customer.username,
-      "customer.password": customer.password,
+      'customer.firstName': customer.firstName,
+      'customer.lastName': customer.lastName,
+      'customer.address.street': customer.address.street,
+      'customer.address.city': customer.address.city,
+      'customer.address.state': customer.address.state,
+      'customer.address.zipCode': customer.address.zipCode,
+      'customer.phoneNumber': customer.phoneNumber,
+      'customer.ssn': customer.ssn,
+      'customer.username': customer.username,
+      'customer.password': customer.password,
       repeatedPassword: customer.password,
     };
 
-    const response = await this.request.post("/parabank/register.htm", {
+    const response = await this.request.post('/parabank/register.htm', {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       form: formBody,
     });
@@ -93,17 +83,18 @@ export class ParabankApiClient {
 
   private authenticatedHeaders() {
     if (!this.username || !this.password) {
-      throw new Error("Credentials are not set on API client");
+      throw new Error('Credentials are not set on API client');
     }
     return {
-      Authorization:
-        "Basic " +
-        Buffer.from(`${this.username}:${this.password}`).toString("base64"),
-      Accept: "application/json",
+      Authorization: 'Basic ' + Buffer.from(`${this.username}:${this.password}`).toString('base64'),
+      Accept: 'application/json',
     };
   }
 
-  private async authGet(url: string, options: any = {}) {
+  private async authGet(
+    url: string,
+    options: { headers?: Record<string, string>; [key: string]: unknown } = {},
+  ) {
     return this.request.get(url, {
       ...options,
       headers: {
@@ -113,7 +104,10 @@ export class ParabankApiClient {
     });
   }
 
-  private async authPost(url: string, options: any = {}) {
+  private async authPost(
+    url: string,
+    options: { headers?: Record<string, string>; [key: string]: unknown } = {},
+  ) {
     return this.request.post(url, {
       ...options,
       headers: {
@@ -123,7 +117,10 @@ export class ParabankApiClient {
     });
   }
 
-  private async authPut(url: string, options: any = {}) {
+  private async authPut(
+    url: string,
+    options: { headers?: Record<string, string>; [key: string]: unknown } = {},
+  ) {
     return this.request.put(url, {
       ...options,
       headers: {
@@ -133,7 +130,10 @@ export class ParabankApiClient {
     });
   }
 
-  private async authDelete(url: string, options: any = {}) {
+  private async authDelete(
+    url: string,
+    options: { headers?: Record<string, string>; [key: string]: unknown } = {},
+  ) {
     return this.request.delete(url, {
       ...options,
       headers: {
@@ -149,7 +149,7 @@ export class ParabankApiClient {
     );
 
     if (!response.ok()) {
-      return "";
+      return '';
     }
 
     const responseBody = await response.json();
@@ -161,12 +161,10 @@ export class ParabankApiClient {
    * @returns {Promise<any>} The list of accounts.
    */
   async getAccountsByCustomerId(customerId: string): Promise<any> {
-    const response = await this.authGet(
-      `/parabank/services/bank/customers/${customerId}/accounts`,
-    );
+    const response = await this.authGet(`/parabank/services/bank/customers/${customerId}/accounts`);
 
     if (!response.ok()) {
-      return "";
+      return '';
     }
 
     const responseBody = await response.json();
@@ -190,16 +188,13 @@ export class ParabankApiClient {
     fromAccountId: number;
     newAccountType: AccountType;
   }): Promise<any> {
-    const response = await this.authPost(
-      `/parabank/services/bank/createAccount`,
-      {
-        params: {
-          customerId,
-          fromAccountId,
-          newAccountType: getAccountTypeId(newAccountType),
-        },
+    const response = await this.authPost(`/parabank/services/bank/createAccount`, {
+      params: {
+        customerId,
+        fromAccountId,
+        newAccountType: getAccountTypeId(newAccountType),
       },
-    );
+    });
 
     if (!response.ok()) {
       return { status: response.status() };
@@ -215,15 +210,11 @@ export class ParabankApiClient {
    * @returns {Promise<any>} The account details.
    */
   async getAccountDetails(accountId: number): Promise<any> {
-    return this.authGet(`/parabank/services/bank/accounts/${accountId}`).then(
-      (response) => {
-        if (!response.ok()) {
-          throw new Error(
-            `Failed to get account details with status ${response.status()}`,
-          );
-        }
-        return response.json();
-      },
-    );
+    return this.authGet(`/parabank/services/bank/accounts/${accountId}`).then((response) => {
+      if (!response.ok()) {
+        throw new Error(`Failed to get account details with status ${response.status()}`);
+      }
+      return response.json();
+    });
   }
 }
