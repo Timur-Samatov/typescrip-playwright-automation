@@ -12,7 +12,6 @@ env:
   USERNAME_1: ${{ secrets.USERNAME_1 }}
   PASSWORD_1: ${{ secrets.PASSWORD_1 }}
   BASE_URL: ${{ secrets.BASE_URL }}
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   test:
@@ -48,7 +47,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '24'
 
       - name: Install pnpm and dependencies
         run: |
