@@ -1,21 +1,27 @@
 name: Playwright Tests
+
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
 
 env:
   USER_FULLNAME_1: ${{ secrets.USER_FULLNAME_1 }}
   USERNAME_1: ${{ secrets.USERNAME_1 }}
   PASSWORD_1: ${{ secrets.PASSWORD_1 }}
   BASE_URL: ${{ secrets.BASE_URL }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Initialize ParaBank Database
         id: init-db
         run: |
@@ -38,17 +44,25 @@ jobs:
             echo "❌ Database initialization failed (HTTP: $http_code)"
             exit 1
           fi
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - name: Install dependencies
-        run: npm install -g pnpm && pnpm install
+
+      - name: Install pnpm and dependencies
+        run: |
+          npm install -g pnpm
+          pnpm install
+
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
+
       - name: Run Playwright tests
         run: pnpm exec playwright test
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
